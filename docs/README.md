@@ -1,0 +1,501 @@
+# Heartbeat Sounds Classification and Segmentation
+
+[![github-badge]][repo]
+
+- [Heartbeat Sounds Classification and Segmentation](#heartbeat-sounds-classification-and-segmentation)
+  - [The Dataset](#the-dataset)
+  - [The Classification Model](#the-classification-model)
+    - [Data Preprocessing](#data-preprocessing)
+    - [Hyperparameters](#hyperparameters)
+    - [Feed Forward Fully Connected Neural Network](#feed-forward-fully-connected-neural-network)
+      - [Architecture 1](#architecture-1)
+      - [Architecture 2](#architecture-2)
+      - [Architecture 3 : Deeper](#architecture-3--deeper)
+    - [Test Results For Feed Forward Fully Connected Neural Network](#test-results-for-feed-forward-fully-connected-neural-network)
+      - [Model A](#model-a)
+        - [Classification Report](#classification-report)
+        - [Confusion Matrix](#confusion-matrix)
+      - [Model C](#model-c)
+        - [Classification Report for Deeper NN Model](#classification-report-for-deeper-nn-model)
+        - [Confusion Matrix for Deeper NN Model](#confusion-matrix-for-deeper-nn-model)
+    - [Convolutional Neural Network](#convolutional-neural-network)
+      - [Architecture 1 : 1D Convolutional Neural Network](#architecture-1--1d-convolutional-neural-network)
+      - [Architecture 2 : Regularized 1D Convolutional Neural Network](#architecture-2--regularized-1d-convolutional-neural-network)
+      - [Architecture 3 : Deeper 1D Convolutional Neural Network](#architecture-3--deeper-1d-convolutional-neural-network)
+    - [The Results](#the-results)
+      - [Model A : 1D Convolutional Neural Network](#model-a--1d-convolutional-neural-network)
+        - [Classification Report For CNN](#classification-report-for-cnn)
+        - [Confusion Matrix For CNN](#confusion-matrix-for-cnn)
+      - [Model C : Deeper 1D Convolutional Neural Network](#model-c--deeper-1d-convolutional-neural-network)
+        - [Classification Report For Deeper CNN](#classification-report-for-deeper-cnn)
+        - [Confusion Matrix For Deeper CNN](#confusion-matrix-for-deeper-cnn)
+    - [Conclusion](#conclusion)
+  - [The Segmentation Model](#the-segmentation-model)
+
+## The Dataset
+
+The dataset is available on [Kaggle](https://www.kaggle.com/kinguistics/heartbeat-sounds).
+
+<!-- TODO: describe the data -->
+
+## The Classification Model
+
+[![kaggle-badge]][classification-notebook]
+
+### Data Preprocessing
+
+The data is prepared for classification using the following steps:
+
+1. The audio files are sampled at a constant rate of 22050 Hz.
+2. The shorter audio files are padded with zeros to match the length of the longest audio file at 12 seconds.
+3. The lables are one-hot encoded.
+
+```python
+labels = {
+    'murmur'     : np.array([1,0,0,0]),
+    'normal'     : np.array([0,1,0,0]),
+    'extrahls'   : np.array([0,0,1,0]),
+    'extrastole' : np.array([0,0,0,1]),
+}
+```
+
+### Hyperparameters
+
+| Hyperparameter          | Value                     |
+| ----------------------- | ------------------------- |
+| Learning Rate Schedule  | Step Decay                |
+| Learning Rate Factor    | 2e-5                      |
+| Learning Rate Patience  | 35                        |
+| Activation Function     | ReLU , Softmax            |
+| Optimizer               | Adam                      |
+| Loss Function           | Categorical Cross Entropy |
+| Epochs                  | 500                       |
+| Early Stopping          | True                      |
+| Early Stopping Patience | 50                        |
+
+### Feed Forward Fully Connected Neural Network
+
+We try different architectures for the fully connected neural network.
+
+#### Architecture 1
+
+```text
+
+Model: "ClassifierA"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #
+_________________________________________________________________
+flatten_21 (Flatten)         (None, 40)                0
+_________________________________________________________________
+dense_57 (Dense)             (None, 2048)              83968
+_________________________________________________________________
+dense_58 (Dense)             (None, 512)               1049088
+_________________________________________________________________
+dense_59 (Dense)             (None, 4)                 2052
+_________________________________________________________________
+Total params: 1,135,108
+Trainable params: 1,135,108
+Non-trainable params: 0
+_________________________________________________________________
+
+```
+
+| Information         | Value |
+| ------------------- | ----- |
+| Number of epochs    | 171   |
+| Training Accuracy   | 0.93  |
+| Training Loss       | 0.24  |
+| Validation Accuracy | 0.78  |
+| Validation Loss     | 0.72  |
+
+![loss][loss-nn]
+
+![accuracy][accuracy-nn]
+
+#### Architecture 2
+
+We add regularization to the model to prevent overfitting.
+
+```text
+Model: "ClassifierB"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #
+=================================================================
+flatten_22 (Flatten)         (None, 40)                0
+_________________________________________________________________
+dense_60 (Dense)             (None, 2048)              83968
+_________________________________________________________________
+dense_61 (Dense)             (None, 512)               1049088
+_________________________________________________________________
+dropout_13 (Dropout)         (None, 512)               0
+_________________________________________________________________
+dense_62 (Dense)             (None, 4)                 2052
+=================================================================
+Total params: 1,135,108
+Trainable params: 1,135,108
+Non-trainable params: 0
+_________________________________________________________________
+```
+
+Number of epochs : 308
+
+Training Accuracy : 0.89
+
+Training Loss : 0.30
+
+Validation Accuracy : 0.74
+
+Validation Loss : 0.61
+
+![loss][loss-nn-reg]
+
+![accuracy][accuracy-nn-reg]
+
+#### Architecture 3 : Deeper
+
+```text
+Model: "ClassifierC"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #
+=================================================================
+flatten_29 (Flatten)         (None, 40)                0
+_________________________________________________________________
+dense_85 (Dense)             (None, 2048)              83968
+_________________________________________________________________
+dense_86 (Dense)             (None, 1024)              2098176
+_________________________________________________________________
+dense_87 (Dense)             (None, 64)                65600
+_________________________________________________________________
+dense_88 (Dense)             (None, 64)                4160
+_________________________________________________________________
+dense_89 (Dense)             (None, 4)                 260
+=================================================================
+Total params: 2,252,164
+Trainable params: 2,252,164
+Non-trainable params: 0
+_________________________________________________________________
+```
+
+Number of epochs : 169
+
+Training Accuracy : 0.86
+
+Training Loss : 0.32
+
+Validation Accuracy : 0.76
+
+Validation Loss : 0.63
+
+![loss][loss-nn-deep]
+
+![accuracy][accuracy-nn-deep]
+
+### Test Results For Feed Forward Fully Connected Neural Network
+
+The best model is the first model.
+
+| Model | Accuracy | Loss | AUC  |
+| ----- | -------- | ---- | ---- |
+| C     | 0.76     | 0.63 | 0.97 |
+| A     | 0.83     | 0.71 | 0.92 |
+
+#### Model A
+
+##### Classification Report
+
+```text
+              precision    recall  f1-score   support
+
+      murmur       0.86      0.71      0.77        17
+      normal       0.75      0.63      0.69        19
+    extrahls       0.95      1.00      0.98        20
+  extrastole       0.78      0.95      0.86        22
+
+    accuracy                           0.83        78
+   macro avg       0.83      0.82      0.82        78
+weighted avg       0.83      0.83      0.83        78
+```
+
+##### Confusion Matrix
+
+![confusion matrix][confusion-nn]
+
+#### Model C
+
+##### Classification Report for Deeper NN Model
+
+```text
+              precision    recall  f1-score   support
+
+      murmur       0.65      0.76      0.70        17
+      normal       0.80      0.42      0.55        19
+    extrahls       0.95      1.00      0.98        20
+  extrastole       0.78      0.95      0.86        22
+
+    accuracy                           0.79        78
+   macro avg       0.80      0.79      0.77        78
+weighted avg       0.80      0.79      0.78        78
+```
+
+##### Confusion Matrix for Deeper NN Model
+
+![confusion matrix][confusion-nn-deep]
+
+### Convolutional Neural Network
+
+We try different architectures for the convolutional neural network.
+
+#### Architecture 1 : 1D Convolutional Neural Network
+
+```text
+Model: "sequential_9"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #
+=================================================================
+conv1d_38 (Conv1D)           (None, 40, 64)            256
+_________________________________________________________________
+conv1d_39 (Conv1D)           (None, 40, 64)            12352
+_________________________________________________________________
+max_pooling1d_19 (MaxPooling (None, 20, 64)            0
+_________________________________________________________________
+conv1d_40 (Conv1D)           (None, 20, 32)            6176
+_________________________________________________________________
+conv1d_41 (Conv1D)           (None, 20, 32)            3104
+_________________________________________________________________
+max_pooling1d_20 (MaxPooling (None, 10, 32)            0
+_________________________________________________________________
+flatten_23 (Flatten)         (None, 320)               0
+_________________________________________________________________
+dense_63 (Dense)             (None, 64)                20544
+_________________________________________________________________
+dense_64 (Dense)             (None, 4)                 260
+=================================================================
+Total params: 42,692
+Trainable params: 42,692
+Non-trainable params: 0
+_________________________________________________________________
+```
+
+| Information         | Value  |
+| ------------------- | ------ |
+| Number of epochs    | 145    |
+| Training Accuracy   | 0.9667 |
+| Training Loss       | 0.1258 |
+| Validation Accuracy | 0.8333 |
+| Validation Loss     | 0.6647 |
+
+![loss][loss-cnn]
+
+![accuracy][accuracy-cnn]
+
+#### Architecture 2 : Regularized 1D Convolutional Neural Network
+
+We add batch normalization and dropout.
+
+```text
+Model: "sequential_10"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #
+=================================================================
+conv1d_42 (Conv1D)           (None, 40, 64)            256
+_________________________________________________________________
+conv1d_43 (Conv1D)           (None, 40, 64)            12352
+_________________________________________________________________
+max_pooling1d_21 (MaxPooling (None, 20, 64)            0
+_________________________________________________________________
+batch_normalization_8 (Batch (None, 20, 64)            256
+_________________________________________________________________
+conv1d_44 (Conv1D)           (None, 20, 32)            6176
+_________________________________________________________________
+conv1d_45 (Conv1D)           (None, 20, 32)            3104
+_________________________________________________________________
+max_pooling1d_22 (MaxPooling (None, 10, 32)            0
+_________________________________________________________________
+batch_normalization_9 (Batch (None, 10, 32)            128
+_________________________________________________________________
+flatten_24 (Flatten)         (None, 320)               0
+_________________________________________________________________
+dropout_14 (Dropout)         (None, 320)               0
+_________________________________________________________________
+dense_65 (Dense)             (None, 64)                20544
+_________________________________________________________________
+dropout_15 (Dropout)         (None, 64)                0
+_________________________________________________________________
+dense_66 (Dense)             (None, 4)                 260
+=================================================================
+Total params: 43,076
+Trainable params: 42,884
+Non-trainable params: 192
+_________________________________________________________________
+```
+
+> Note: The model is trained for 500 epochs because we do not use early stopping.
+
+| Information         | Value  |
+| ------------------- | ------ |
+| Number of epochs    | 500    |
+| Training Accuracy   | 0.9972 |
+| Training Loss       | 0.02   |
+| Validation Accuracy | 0.7821 |
+| Validation Loss     | 0.7693 |
+
+![loss][loss-cnn-reg]
+
+![accuracy][accuracy-cnn-reg]
+
+#### Architecture 3 : Deeper 1D Convolutional Neural Network
+
+We add more layers to the model.
+
+```text
+Model: "sequential_11"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #
+=================================================================
+conv1d_46 (Conv1D)           (None, 40, 64)            256
+_________________________________________________________________
+conv1d_47 (Conv1D)           (None, 40, 64)            12352
+_________________________________________________________________
+max_pooling1d_23 (MaxPooling (None, 20, 64)            0
+_________________________________________________________________
+conv1d_48 (Conv1D)           (None, 20, 32)            6176
+_________________________________________________________________
+conv1d_49 (Conv1D)           (None, 20, 32)            3104
+_________________________________________________________________
+max_pooling1d_24 (MaxPooling (None, 10, 32)            0
+_________________________________________________________________
+conv1d_50 (Conv1D)           (None, 10, 16)            1552
+_________________________________________________________________
+conv1d_51 (Conv1D)           (None, 10, 16)            784
+_________________________________________________________________
+max_pooling1d_25 (MaxPooling (None, 5, 16)             0
+_________________________________________________________________
+flatten_25 (Flatten)         (None, 80)                0
+_________________________________________________________________
+dense_67 (Dense)             (None, 64)                5184
+_________________________________________________________________
+dense_68 (Dense)             (None, 64)                4160
+_________________________________________________________________
+dense_69 (Dense)             (None, 4)                 260
+=================================================================
+Total params: 33,828
+Trainable params: 33,828
+Non-trainable params: 0
+_________________________________________________________________
+```
+
+| Information         | Value  |
+| ------------------- | ------ |
+| Number of epochs    | 144    |
+| Training Accuracy   | 0.9972 |
+| Training Loss       | 0.0565 |
+| Validation Accuracy | 0.8077 |
+| Validation Loss     | 0.7947 |
+
+![loss][loss-cnn-deep]
+
+![accuracy][accuracy-cnn-deep]
+
+### The Results
+
+The best model is the first model.
+
+| Model | Accuracy | Loss   | AUC   |
+| ----- | -------- | ------ | ----- |
+| A     | 0.7436   | 0.5520 | 0.946 |
+| C     | 0.73     | 0.79   | 0.92  |
+
+#### Model A : 1D Convolutional Neural Network
+
+##### Classification Report For CNN
+
+```text
+              precision    recall  f1-score   support
+
+      murmur       0.65      0.65      0.65        17
+      normal       0.53      0.42      0.47        19
+    extrahls       0.95      1.00      0.98        20
+  extrastole       0.76      0.86      0.81        22
+
+    accuracy                           0.74        78
+   macro avg       0.72      0.73      0.73        78
+weighted avg       0.73      0.74      0.73        78
+```
+
+##### Confusion Matrix For CNN
+
+![confusion matrix][confusion-cnn]
+
+#### Model C : Deeper 1D Convolutional Neural Network
+
+##### Classification Report For Deeper CNN
+
+```text
+              precision    recall  f1-score   support
+
+      murmur       0.65      0.65      0.65        17
+      normal       0.50      0.53      0.51        19
+    extrahls       0.95      1.00      0.98        20
+  extrastole       0.80      0.73      0.76        22
+
+    accuracy                           0.73        78
+   macro avg       0.72      0.73      0.72        78
+weighted avg       0.73      0.73      0.73        78
+```
+
+##### Confusion Matrix For Deeper CNN
+
+![confusion matrix][confusion-cnn-deep]
+
+### Conclusion
+
+- CNN models take much less time to train than feed forward networks.
+- The accuracy of the CNN models is not as good as the feed forward networks.
+- Regularization by adding dropout does not always prevent overfitting.
+
+## The Segmentation Model
+
+<!-- References -->
+
+<!-- Links -->
+[github-badge]: https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
+
+[repo]: https://github.com/moharamfatema/heartbeat-sounds
+
+[kaggle-badge]: https://img.shields.io/badge/Kaggle-20BEFF?style=for-the-badge&logo=kaggle&logoColor=white
+
+[classification-notebook]: https://www.kaggle.com/code/fatemamoharam/heartbeat-sounds-classification/notebook
+
+<!-- Images -->
+
+[loss-nn]: img/lossnn.png
+
+[accuracy-nn]: img/accnn.png
+
+[loss-nn-reg]: img/lossnnreg.png
+
+[accuracy-nn-reg]: img/accnnreg.png
+
+[loss-nn-deep]: img/lossnndeep.png
+
+[accuracy-nn-deep]: img/accnndeep.png
+
+[confusion-nn-deep]: img/confnndeep.png
+
+[confusion-nn]: img/confnn.png
+
+[loss-cnn]: img/losscnn.png
+
+[accuracy-cnn]: img/acccnn.png
+
+[loss-cnn-reg]: img/losscnnreg.png
+
+[accuracy-cnn-reg]: img/acccnnreg.png
+
+[loss-cnn-deep]: img/losscnndeep.png
+
+[accuracy-cnn-deep]: img/acccnndeep.png
+
+[confusion-cnn-deep]: img/confcnndeep.png
+
+[confusion-cnn]: img/confcnn.png
