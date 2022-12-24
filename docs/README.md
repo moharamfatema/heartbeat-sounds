@@ -261,7 +261,41 @@ g= sns.histplot(data=setAtiming, x="cycle", y="location", cbar=True)
 ```
 ![cycles-locations]
 
+Analyzing the Audios:
 
+There are naming mistakes in the csv files so we renamed 'fname' to match the audio files.
+We then created a new dataframe with the information needed.
+```python
+Audio	Label
+0	drive/MyDrive/PR_assignment3/set_a/murmur__201...	murmur
+1	drive/MyDrive/PR_assignment3/set_a/murmur__201...	murmur
+2	drive/MyDrive/PR_assignment3/set_a/murmur__201...	murmur
+3	drive/MyDrive/PR_assignment3/set_a/murmur__201...	murmur
+4	drive/MyDrive/PR_assignment3/set_a/murmur__201...	murmur
+...	...	...
+510	drive/MyDrive/PR_assignment3/set_b/normal_nois...	normal
+511	drive/MyDrive/PR_assignment3/set_b/normal__159...	normal
+512	drive/MyDrive/PR_assignment3/set_b/normal_nois...	normal
+513	drive/MyDrive/PR_assignment3/set_a/normal__201...	normal
+514	drive/MyDrive/PR_assignment3/set_b/normal_nois...	normal
+515 rows × 2 columns
+```
+1) Extrahls
+![extrahls-wav]
+![extrahls-wav-reduced-noise]
+![extrahls-spectrum]
+
+Spectrogram to represent the noise or sound intensity of audio data with respect to frequency and time
+
+![extrahls-spectogram]
+
+Feature Extraction from audio:
+
+Visualize audio data focused on a particular point or mean (centroid)
+![extrahls-centroids]
+
+MFCCs small set of features that describe the overall shape of a spectral envelope
+![extrahls-mfccs]
 
 
 ## The Classification Model
@@ -693,11 +727,24 @@ weighted avg       0.73      0.73      0.73        78
 [classification-notebook]: https://www.kaggle.com/code/fatemamoharam/heartbeat-sounds-classification/notebook
 
 <!-- Images -->
-[cycles-locations] : img/set_a_timing_location_cycles.PNG
+
+[cycles-locations]: img/set_a_timing_location_cycles.PNG
 
 [AB-dist-before]: img/distribution_AB_before.PNG
 
-[AB-dist-after] : /img/distribution_AB_after.PNG
+[AB-dist-after]: img/distribution_AB_after.PNG
+
+[extrahls-wav]: img/extrahls_wav.PNG
+
+[extrahls-wav-reduced-noise]: img/extrahls_wav_reduced_noise.PNG
+
+[extrahls-spectrum]: img/extrahls_spectrum.PNG
+
+[extrahls-spectogram]: img/extrahls_spectogram.PNG
+
+[extrahls-centroids]: img/extrahls_centroids.PNG
+
+[extrahls-mfccs]: img/extrahls_mfccs.PNG
 
 [loss-nn]: img/lossnn.png
 
