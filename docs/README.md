@@ -368,6 +368,42 @@ MFCCs small set of features that describe the overall shape of a spectral envelo
 
 ![extrastole-mfccs]
 
+## Data Splitting
+Split the data 70 train, 15 validation, 15 test.
+
+For task A (size):
+
+x test = 177
+
+x test shape = (59, 3)
+
+y test = 59
+
+x train = 816
+
+x train shape = (272, 3)
+
+y train = 272
+
+x val = 177
+
+x validation shape = (59, 3)
+
+y val = 59
+
+For task B (size):
+
+x test = 78
+
+y test = 78
+
+x train = 360
+
+y train = 360
+
+x val = 78
+
+y val = 78
 
 ## The Classification Model
 
@@ -817,7 +853,7 @@ weighted avg       0.73      0.73      0.73        78
 
 [extrahls-mfccs]: img/extrahls_mfccs.PNG
 
-[murmur-wav]: img/murmur_wav.PNG
+[murmur-wav]: img/mumur_wav.PNG
 
 [murmur-wav-reduced-noise]: img/murmur_wav_reduced_noise.PNG
 
