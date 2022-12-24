@@ -281,8 +281,11 @@ Audio	Label
 515 rows × 2 columns
 ```
 1) Extrahls
+
 ![extrahls-wav]
+
 ![extrahls-wav-reduced-noise]
+
 ![extrahls-spectrum]
 
 Spectrogram to represent the noise or sound intensity of audio data with respect to frequency and time
@@ -292,10 +295,78 @@ Spectrogram to represent the noise or sound intensity of audio data with respect
 Feature Extraction from audio:
 
 Visualize audio data focused on a particular point or mean (centroid)
+
 ![extrahls-centroids]
 
 MFCCs small set of features that describe the overall shape of a spectral envelope
+
 ![extrahls-mfccs]
+
+2) Murmur
+
+![murmur-wav]
+
+![murmur-wav-reduced-noise]
+
+![murmur-spectrum]
+
+Spectrogram to represent the noise or sound intensity of audio data with respect to frequency and time
+
+![murmur-spectogram]
+
+Feature Extraction from audio:
+
+Visualize audio data focused on a particular point or mean (centroid)
+
+![murmur-centroids]
+
+MFCCs small set of features that describe the overall shape of a spectral envelope
+
+![murmur-mfccs]
+
+3) Normal
+
+![normal-wav]
+
+![normal-wav-reduced-noise]
+
+![normal-spectrum]
+
+Spectrogram to represent the noise or sound intensity of audio data with respect to frequency and time
+
+![normal-spectogram]
+
+Feature Extraction from audio:
+
+Visualize audio data focused on a particular point or mean (centroid)
+
+![normal-centroids]
+
+MFCCs small set of features that describe the overall shape of a spectral envelope
+
+![normal-mfccs]
+
+4) Extrastole
+
+![extrastole-wav]
+
+![extrastole-wav-reduced-noise]
+
+![extrastole-spectrum]
+
+Spectrogram to represent the noise or sound intensity of audio data with respect to frequency and time
+
+![extrastole-spectogram]
+
+Feature Extraction from audio:
+
+Visualize audio data focused on a particular point or mean (centroid)
+
+![extrastole-centroids]
+
+MFCCs small set of features that describe the overall shape of a spectral envelope
+
+![extrastole-mfccs]
 
 
 ## The Classification Model
@@ -745,6 +816,42 @@ weighted avg       0.73      0.73      0.73        78
 [extrahls-centroids]: img/extrahls_centroids.PNG
 
 [extrahls-mfccs]: img/extrahls_mfccs.PNG
+
+[murmur-wav]: img/murmur_wav.PNG
+
+[murmur-wav-reduced-noise]: img/murmur_wav_reduced_noise.PNG
+
+[murmur-spectrum]: img/murmur_spectrum.PNG
+
+[murmur-spectogram]: img/murmur_spectogram.PNG
+
+[murmur-centroids]: img/murmur_centroids.PNG
+
+[murmur-mfccs]: img/murmur_mfccs.PNG
+
+[normal-wav]: img/normal_wav.PNG
+
+[normal-wav-reduced-noise]: img/normal_wav_reduced_noise.PNG
+
+[normal-spectrum]: img/normal_spectrum.PNG
+
+[normal-spectogram]: img/normal_spectogram.PNG
+
+[normal-centroids]: img/normal_centroids.PNG
+
+[normal-mfccs]: img/normal_mfccs.PNG
+
+[extrastole-wav]: img/extrastole_wav.PNG
+
+[extrastole-wav-reduced-noise]: img/extrastole_wav_reduced_noise.PNG
+
+[extrastole-spectrum]: img/extrastole_spectrum.PNG
+
+[extrastole-spectogram]: img/extrastole_spectogram.PNG
+
+[extrastole-centroids]: img/extrastole_centroids.PNG
+
+[extrastole-mfccs]: img/extrastole_mfccs.PNG
 
 [loss-nn]: img/lossnn.png
 
