@@ -36,7 +36,233 @@
 
 The dataset is available on [Kaggle](https://www.kaggle.com/kinguistics/heartbeat-sounds).
 
-<!-- TODO: describe the data -->
+## Data Exploratory analysis
+
+Set A:
+
+```python
+	dataset	fname	label	sublabel
+0	a	set_a/artifact__201012172012.wav	artifact	NaN
+1	a	set_a/artifact__201105040918.wav	artifact	NaN
+2	a	set_a/artifact__201105041959.wav	artifact	NaN
+3	a	set_a/artifact__201105051017.wav	artifact	NaN
+4	a	set_a/artifact__201105060108.wav	artifact	NaN
+...	...	...	...	...
+170	a	set_a/__201108222234.wav	NaN	NaN
+171	a	set_a/__201108222241.wav	NaN	NaN
+172	a	set_a/__201108222244.wav	NaN	NaN
+173	a	set_a/__201108222247.wav	NaN	NaN
+174	a	set_a/__201108222254.wav	NaN	NaN
+175 rows × 4 columns
+```
+```python
+setA.info()
+```
+```python
+RangeIndex: 176 entries, 0 to 175
+Data columns (total 4 columns):
+ #   Column    Non-Null Count  Dtype  
+---  ------    --------------  -----  
+ 0   dataset   176 non-null    object 
+ 1   fname     176 non-null    object 
+ 2   label     124 non-null    object 
+ 3   sublabel  0 non-null      float64
+dtypes: float64(1), object(3)
+memory usage: 5.6+ KB
+```
+```python
+print(setA["label"].value_counts())
+```
+artifact    40
+
+murmur      34
+
+normal      31
+
+extrahls    19
+```python
+print(setA["label"].value_counts().sum())
+```
+124
+```python
+print(setA["label"].isnull().sum())
+```
+We should remove all null label entries from the dataframe
+```python
+setA = setA.dropna(subset=['label'])
+```
+We should also remove the artifact label entries since they are anomalies
+```python
+setA = setA[setA.label != 'artifact']
+```
+Now lets look at the altered value counts with the 3 classes
+```python
+print(setA["label"].value_counts())
+```
+murmur      34
+
+normal      31
+
+extrahls    19
+
+
+
+Set B:
+
+```python
+	dataset	fname	label	sublabel
+0	b	set_b/Btraining_extrastole_127_1306764300147_C...	extrastole	NaN
+1	b	set_b/Btraining_extrastole_128_1306344005749_A...	extrastole	NaN
+2	b	set_b/Btraining_extrastole_130_1306347376079_D...	extrastole	NaN
+3	b	set_b/Btraining_extrastole_134_1306428161797_C...	extrastole	NaN
+4	b	set_b/Btraining_extrastole_138_1306762146980_B...	extrastole	NaN
+...	...	...	...	...
+650	b	set_b/Btraining_normal_Btraining_noisynormal_2...	normal	noisynormal
+651	b	set_b/Btraining_normal_Btraining_noisynormal_2...	normal	noisynormal
+652	b	set_b/Btraining_normal_Btraining_noisynormal_2...	normal	noisynormal
+653	b	set_b/Btraining_normal_Btraining_noisynormal_2...	normal	noisynormal
+654	b	set_b/Btraining_normal_Btraining_noisynormal_2...	normal	noisynormal
+655 rows × 4 columns
+```
+```python
+setB.info()
+```
+```python
+RangeIndex: 656 entries, 0 to 655
+Data columns (total 4 columns):
+ #   Column    Non-Null Count  Dtype 
+---  ------    --------------  ----- 
+ 0   dataset   656 non-null    object
+ 1   fname     656 non-null    object
+ 2   label     461 non-null    object
+ 3   sublabel  149 non-null    object
+dtypes: object(4)
+memory usage: 20.6+ KB
+```
+```python
+setB.describe()
+```
+```python
+	dataset	fname	label	sublabel
+count	656	656	461	149
+unique	1	656	3	2
+top	b	set_b/Btraining_extrastole_127_1306764300147_C...	normal	noisynormal
+freq	656	1	320	120
+```
+We will do the same here as with set A and drop all entries with null values
+This will give us 3 classes in set B
+```python
+setB = setB.dropna(subset=['label'])
+```
+```python
+print(setB["label"].value_counts())
+```
+normal        320
+
+murmur         95
+
+extrastole     46
+
+We will need all 4 categories together to be able to classify, so will join both sets A and B
+
+Combining Sets A and B:
+```python
+setAB = [setA,setB]
+ABdf = pd.concat(setAB)
+print(ABdf.head(-1))
+```
+```python
+dataset                                              fname     label  
+40        a                   set_a/extrahls__201101070953.wav  extrahls   
+41        a                   set_a/extrahls__201101091153.wav  extrahls   
+42        a                   set_a/extrahls__201101152255.wav  extrahls   
+43        a                   set_a/extrahls__201101160804.wav  extrahls   
+44        a                   set_a/extrahls__201101160808.wav  extrahls   
+..      ...                                                ...       ...   
+650       b  set_b/Btraining_normal_Btraining_noisynormal_2...    normal   
+651       b  set_b/Btraining_normal_Btraining_noisynormal_2...    normal   
+652       b  set_b/Btraining_normal_Btraining_noisynormal_2...    normal   
+653       b  set_b/Btraining_normal_Btraining_noisynormal_2...    normal   
+654       b  set_b/Btraining_normal_Btraining_noisynormal_2...    normal         
+[544 rows x 4 columns]
+```
+The distribution of each class:
+normal        351
+
+murmur        129
+
+extrastole     46
+
+extrahls       19
+
+![AB-dist-before]
+
+The data is very unbalanced, so we will upsample extrahls and extrastole and downsample normal
+
+![AB-dist-after]
+
+Set A timing:
+
+```python
+	fname	cycle	sound	location
+0	set_a/normal__201102081321.wav	1	S1	10021
+1	set_a/normal__201102081321.wav	1	S2	20759
+2	set_a/normal__201102081321.wav	2	S1	35075
+3	set_a/normal__201102081321.wav	2	S2	47244
+4	set_a/normal__201102081321.wav	3	S1	62992
+...	...	...	...	...
+384	set_a/normal__201108011118.wav	10	S1	272527
+385	set_a/normal__201108011118.wav	10	S2	284673
+386	set_a/normal__201108011118.wav	11	S1	300863
+387	set_a/normal__201108011118.wav	11	S2	314279
+388	set_a/normal__201108011118.wav	12	S1	330980
+389 rows × 4 columns
+```
+```python
+setAtiming.info()
+```
+```python
+RangeIndex: 390 entries, 0 to 389
+Data columns (total 4 columns):
+ #   Column    Non-Null Count  Dtype 
+---  ------    --------------  ----- 
+ 0   fname     390 non-null    object
+ 1   cycle     390 non-null    int64 
+ 2   sound     390 non-null    object
+ 3   location  390 non-null    int64 
+dtypes: int64(2), object(2)
+memory usage: 12.3+ KB
+```
+```python
+setAtiming.describe()
+```
+```python
+	cycle	location
+count	390.000000	390.000000
+mean	5.733333	164639.984615
+std	3.732807	99310.875752
+min	1.000000	2583.000000
+25%	3.000000	82313.000000
+50%	5.000000	155624.500000
+75%	8.000000	239709.750000
+max	19.000000	390873.000000
+```
+Check to see if the lub and dub are the same amount
+```python
+print(setAtiming['sound'].value_counts())
+```
+S1    195
+
+S2    195
+
+Plot the cycles against their locations
+```python
+g= sns.histplot(data=setAtiming, x="cycle", y="location", cbar=True)
+```
+![cycles-locations]
+
+
+
 
 ## The Classification Model
 
@@ -467,6 +693,11 @@ weighted avg       0.73      0.73      0.73        78
 [classification-notebook]: https://www.kaggle.com/code/fatemamoharam/heartbeat-sounds-classification/notebook
 
 <!-- Images -->
+[cycles-locations] : img/set_a_timing_location_cycles.PNG
+
+[AB-dist-before]: img/distribution_AB_before.PNG
+
+[AB-dist-after] : /img/distribution_AB_after.PNG
 
 [loss-nn]: img/lossnn.png
 
