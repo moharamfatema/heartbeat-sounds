@@ -852,12 +852,19 @@ opt = Adam(lr=1e-3, decay=1e-3 / 200)
 model.compile(loss="mse", optimizer=opt,metrics=metric)
 ```
 training loss, rsquareloss = 0.06839843094348907, -0.07385599613189697
+
 Mean absolute error = 0.22
+
 Mean squared error = 0.07
+
 Median absolute error = 0.22
+
 Explain variance score = 0.0
+
 R2 score = -0.03
+
 mean -12.865519
+
 std 160.42049
 
 graphs:
@@ -885,11 +892,18 @@ model.compile(loss="mse", optimizer="adam",metrics=metric)
 same learning rate and meterics as feed forward network
 
 training loss,rsquare loss=[0.06612320989370346, 0.0006309747695922852]
+
 Mean absolute error = 0.22
+
 Mean squared error = 0.07
+
 Median absolute error = 0.22
+
 Explain variance score = 0.0
+
 R2 score = -0.03
+
+
 graphs:
 ![cnn_tl][cnn_tl]
 ![cnn_r2s][cnn_r2s]
