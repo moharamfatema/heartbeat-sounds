@@ -814,6 +814,85 @@ weighted avg       0.73      0.73      0.73        78
 
 ![confusion matrix][confusion-cnn-deep]
 
+### Regression model
+#### feed forward network
+model architechture:
+```python
+def create_mlp(dim, regress=False):
+    # define our MLP network
+    model = Sequential()
+    model.add(Dense(2048, input_dim=dim, activation="relu"))
+    model.add(Dense(512, activation="relu"))
+    model.add(Dense(256, activation="relu"))
+    # check to see if the regression node should be added
+    if regress:
+      model.add(Dense(1, activation="linear"))
+    # return our model
+    return model
+```
+adam optmizer:
+```python
+import tensorflow as tf
+values = np.arange(0.000001,0.0003,0.00002)[::-1]
+# values = np.array([0.00003,0.00005,0.00007,0.00009,0.0001,0.0003])[::-1]
+boundaries = np.arange(10, 600,35)[:values.shape[0]-1]
+
+
+scheduler = tf.keras.optimizers.schedules.PiecewiseConstantDecay(
+    list(boundaries), list(values))
+
+lrscheduler = tf.keras.callbacks.LearningRateScheduler(scheduler,verbose=1)
+```
+metrics:
+```python
+import tensorflow_addons as tfa
+metric = tfa.metrics.r_square.RSquare()
+model=create_mlp(20,regress=True)
+opt = Adam(lr=1e-3, decay=1e-3 / 200)
+model.compile(loss="mse", optimizer=opt,metrics=metric)
+```
+training loss, rsquareloss = 0.06839843094348907, -0.07385599613189697
+Mean absolute error = 0.22
+Mean squared error = 0.07
+Median absolute error = 0.22
+Explain variance score = 0.0
+R2 score = -0.03
+mean -12.865519
+std 160.42049
+
+graphs:
+![ff_tl][ff_tl]
+![ff_r2s][ff_r2s]
+#### CNN
+model architechture:
+```python
+from sklearn.datasets import load_boston
+from keras.models import Sequential
+from keras.layers import Dense, Conv1D, Flatten
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
+model = Sequential()
+model.add(Conv1D(256, 2, activation="relu", input_shape=(20, 1)))
+model.add(Flatten())
+model.add(Dense(128, activation="relu"))
+model.add(Flatten())
+model.add(Dense(64, activation="relu"))
+model.add(Dense(1,activation="linear"))
+metric = tfa.metrics.r_square.RSquare()
+model.compile(loss="mse", optimizer="adam",metrics=metric)
+```
+same learning rate and meterics as feed forward network
+
+training loss,rsquare loss=[0.06612320989370346, 0.0006309747695922852]
+Mean absolute error = 0.22
+Mean squared error = 0.07
+Median absolute error = 0.22
+Explain variance score = 0.0
+R2 score = -0.03
+graphs:
+![cnn_tl][cnn_tl]
+![cnn_r2s][cnn_r2s]
 ### Conclusion
 
 - CNN models take much less time to train than feed forward networks.
@@ -854,7 +933,6 @@ weighted avg       0.73      0.73      0.73        78
 [extrahls-mfccs]: img/extrahls_mfccs.PNG
 
 [murmur-wav]: img/mumur_wav.PNG
-
 [murmur-wav-reduced-noise]: img/murmur_wav_reduced_noise.PNG
 
 [murmur-spectrum]: img/murmur_spectrum.PNG
@@ -920,3 +998,7 @@ weighted avg       0.73      0.73      0.73        78
 [confusion-cnn-deep]: img/confcnndeep.png
 
 [confusion-cnn]: img/confcnn.png
+[ff_tl]: img/ff_tl.PNG
+[ff_r2s]: img/ff_r2s.PNG
+[cnn_tl]: img/cnn_tl.PNG
+[cnn_r2s]: img/cnn_r2s.PNG
