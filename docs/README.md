@@ -814,6 +814,15 @@ weighted avg       0.73      0.73      0.73        78
 
 ![confusion matrix][confusion-cnn-deep]
 
+### Conclusion
+
+- CNN models take much less time to train than feed forward networks.
+- The accuracy of the CNN models is not as good as the feed forward networks.
+- Regularization by adding dropout does not always prevent overfitting.
+
+
+## The Segmentation Model
+
 ### Regression model
 #### feed forward network
 model architechture:
@@ -907,14 +916,9 @@ R2 score = -0.03
 graphs:
 ![cnn_tl][cnn_tl]
 ![cnn_r2s][cnn_r2s]
-### Conclusion
 
-- CNN models take much less time to train than feed forward networks.
-- The accuracy of the CNN models is not as good as the feed forward networks.
-- Regularization by adding dropout does not always prevent overfitting.
-
-## The Segmentation Model
-
+### conclusion
+cnn got better values in regression model than feed forward network 
 <!-- References -->
 
 <!-- Links -->
